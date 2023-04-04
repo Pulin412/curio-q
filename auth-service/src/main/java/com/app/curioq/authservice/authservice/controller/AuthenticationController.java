@@ -1,0 +1,32 @@
+package com.app.curioq.authservice.authservice.controller;
+
+import com.app.curioq.authservice.authservice.model.AuthenticationRequestDTO;
+import com.app.curioq.authservice.authservice.model.AuthenticationResponseDTO;
+import com.app.curioq.authservice.authservice.service.AuthenticationService;
+import com.app.curioq.authservice.authservice.service.JwtService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+public class AuthenticationController {
+
+    private final AuthenticationService authenticationService;
+    private final JwtService jwtService;
+
+    public AuthenticationController(AuthenticationService authenticationService, JwtService jwtService) {
+        this.authenticationService = authenticationService;
+        this.jwtService = jwtService;
+    }
+
+    @PostMapping("/token")
+    public ResponseEntity<AuthenticationResponseDTO> generate(@RequestBody AuthenticationRequestDTO authenticationRequestDTO) {
+        return ResponseEntity.ok(authenticationService.generateToken(authenticationRequestDTO.getEmail()));
+    }
+
+    @GetMapping("/getUser")
+    public ResponseEntity<String> getUserId(@RequestParam String jwtToken) {
+        return ResponseEntity.ok(jwtService.extractUsername(jwtToken));
+    }
+
+}
