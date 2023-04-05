@@ -1,7 +1,7 @@
 package com.app.curioq.userservice.userservice.controller;
 
-import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
 import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
+import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
 import com.app.curioq.userservice.userservice.model.RegisterRequestDTO;
 import com.app.curioq.userservice.userservice.model.UserResponseDTO;
 import com.app.curioq.userservice.userservice.service.UserService;
@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok(userService.login(authenticationRequestDTO));
     }
 
-    @GetMapping("/users")
+    @GetMapping("/admin/users")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }

@@ -1,18 +1,16 @@
 package com.app.curioq.userservice.userservice.service;
 
 import com.app.curioq.userservice.userservice.entity.Users;
-import com.app.curioq.userservice.userservice.enums.Role;
 import com.app.curioq.userservice.userservice.exceptions.InvalidLoginException;
 import com.app.curioq.userservice.userservice.exceptions.UserAlreadyPresentException;
 import com.app.curioq.userservice.userservice.gateway.UserGatewayService;
-import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
 import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
+import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
 import com.app.curioq.userservice.userservice.model.RegisterRequestDTO;
 import com.app.curioq.userservice.userservice.model.UserResponseDTO;
 import com.app.curioq.userservice.userservice.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -54,7 +52,7 @@ public class UserServiceImpl implements UserService{
                 .lastname(registerRequestDTO.getLastname())
                 .email(registerRequestDTO.getEmail())
                 .password(registerRequestDTO.getPassword())
-                .role(Role.USER)
+                .role(registerRequestDTO.getRole())
                 .build();
     }
 
@@ -102,6 +100,7 @@ public class UserServiceImpl implements UserService{
                     .lastname(users.getLastname())
                     .email(users.getEmail())
                     .password(users.getPassword())
+                    .role(users.getRole().name())
                     .build()).collect(Collectors.toList());
     }
 
@@ -116,7 +115,8 @@ public class UserServiceImpl implements UserService{
                     .firstname(userFromDb.getFirstname())
                     .lastname(userFromDb.getLastname())
                     .email(userFromDb.getEmail())
-                    .password(userFromDb.getPassword());
+                    .password(userFromDb.getPassword())
+                    .role(userFromDb.getRole().name());
         }
         return userResponseDTOBuilder.build();
     }
