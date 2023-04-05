@@ -16,6 +16,9 @@ public class AuthenticationGatewayConfig {
     @Value("${user.gateway.getUserFromToken.url}")
     private String getUserFromTokenUrl;
 
+    @Value("${auth.secret.key}")
+    private String secretKey;
+
     @Bean
     public WebClient tokenWebClient() {
         return WebClient.builder().baseUrl(generateTokenUrl).build();

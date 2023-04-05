@@ -29,6 +29,9 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .expired(false)
                 .revoked(false)
                 .build();
+
+        Optional<Token> optionalToken = tokenRepository.findByUserId(email);
+        optionalToken.ifPresent(tokenRepository::delete);
         tokenRepository.save(token);
         return AuthenticationResponseDTO.builder().token(generatedToken).build();
     }

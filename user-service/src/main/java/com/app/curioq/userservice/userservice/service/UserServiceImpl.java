@@ -2,6 +2,8 @@ package com.app.curioq.userservice.userservice.service;
 
 import com.app.curioq.userservice.userservice.entity.Users;
 import com.app.curioq.userservice.userservice.enums.Role;
+import com.app.curioq.userservice.userservice.exceptions.InvalidLoginException;
+import com.app.curioq.userservice.userservice.exceptions.UserAlreadyPresentException;
 import com.app.curioq.userservice.userservice.gateway.UserGatewayService;
 import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
 import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
@@ -18,6 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.app.curioq.userservice.userservice.utils.UserServiceConstants.EXCEPTION_INVALID_LOGIN_MESSAGE;
+import static com.app.curioq.userservice.userservice.utils.UserServiceConstants.EXCEPTION_USER_ALREADY_PRESENT_MESSAGE;
+
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService{
@@ -30,6 +35,10 @@ public class UserServiceImpl implements UserService{
     public AuthenticationResponseDTO register(RegisterRequestDTO registerRequestDTO) {
         validationService.validateUser(registerRequestDTO);
 
+        Optional<Users> optionalUser = userRepository.findByEmail(registerRequestDTO.getEmail());
+        if(optionalUser.isPresent()){
+            throw new UserAlreadyPresentException(EXCEPTION_USER_ALREADY_PRESENT_MESSAGE);
+        }
         Users savedUser = userRepository.save(mapUserDtoToEntity(registerRequestDTO));
         String token = userGatewayService.generateToken(savedUser);
         saveToken(savedUser, token);
@@ -68,7 +77,7 @@ public class UserServiceImpl implements UserService{
                 - If user doesn't have a token or if the token is expired, remove all user tokens (expired)
                    and generate a new token.
              */
-            Claims claims = validationService.getClaimsFromToken(token);
+            Claims claims = validationService.getClaimsFromToken(userFromDb.getToken());
 
             if(userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject()) && claims.getExpiration().after(new Date())){
                 token = userFromDb.getToken();
@@ -80,7 +89,7 @@ public class UserServiceImpl implements UserService{
 
             return AuthenticationResponseDTO.builder().token(userFromDb.getToken()).build();
         } else {
-            throw new UsernameNotFoundException("Incorrect details");
+            throw new InvalidLoginException(EXCEPTION_INVALID_LOGIN_MESSAGE);
         }
     }
 
