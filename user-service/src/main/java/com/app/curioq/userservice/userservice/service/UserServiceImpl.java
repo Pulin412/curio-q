@@ -1,8 +1,7 @@
 package com.app.curioq.userservice.userservice.service;
 
 import com.app.curioq.userservice.userservice.entity.Users;
-import com.app.curioq.userservice.userservice.exceptions.InvalidLoginException;
-import com.app.curioq.userservice.userservice.exceptions.UserAlreadyPresentException;
+import com.app.curioq.userservice.userservice.exceptions.*;
 import com.app.curioq.userservice.userservice.gateway.UserGatewayService;
 import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
 import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
@@ -11,6 +10,7 @@ import com.app.curioq.userservice.userservice.model.UserResponseDTO;
 import com.app.curioq.userservice.userservice.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.app.curioq.userservice.userservice.utils.UserServiceConstants.EXCEPTION_INVALID_LOGIN_MESSAGE;
-import static com.app.curioq.userservice.userservice.utils.UserServiceConstants.EXCEPTION_USER_ALREADY_PRESENT_MESSAGE;
+import static com.app.curioq.userservice.userservice.utils.UserServiceConstants.*;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
@@ -40,7 +40,13 @@ public class UserServiceImpl implements UserService{
             throw new UserAlreadyPresentException(EXCEPTION_USER_ALREADY_PRESENT_MESSAGE);
         }
         Users savedUser = userRepository.save(mapUserDtoToEntity(registerRequestDTO));
+
         String token = userGatewayService.generateToken(savedUser);
+
+        if(token == null)
+            throw new GatewayException(EXCEPTION_GATEWAY_MESSAGE);
+
+        log.info("USER SERVICE ::: Token generated for {}", savedUser.getEmail());
         saveToken(savedUser, token);
 
         return AuthenticationResponseDTO.builder()
@@ -71,6 +77,7 @@ public class UserServiceImpl implements UserService{
                 authenticationRequestDTO.getEmail());
 
         if(optionalUser.isPresent()){
+            log.info("USER SERVICE ::: Found User From DB");
             Users userFromDb = optionalUser.get();
             String encodedPassword = userFromDb.getPassword();
 
@@ -87,7 +94,7 @@ public class UserServiceImpl implements UserService{
                 if(userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject()) && claims.getExpiration().after(new Date())){
                     token = userFromDb.getToken();
                 } else {
-
+                    log.info("USER SERICE ::: Token not available, generating new token for {}", userFromDb.getEmail());
                     token = userGatewayService.generateToken(userFromDb);
                     saveToken(userFromDb, token);
                 }
@@ -97,7 +104,7 @@ public class UserServiceImpl implements UserService{
                 throw new InvalidLoginException(EXCEPTION_INVALID_LOGIN_MESSAGE);
             }
         } else {
-            throw new InvalidLoginException(EXCEPTION_INVALID_LOGIN_MESSAGE);
+            throw new InvalidLoginException(EXCEPTION_USER_NOT_PRESENT_MESSAGE);
         }
     }
 
@@ -129,5 +136,24 @@ public class UserServiceImpl implements UserService{
                     .role(userFromDb.getRole().name());
         }
         return userResponseDTOBuilder.build();
+    }
+
+    @Override
+    public void removeUser(String email) {
+        if(email == null || !email.matches(VALIDATION_EMAIL_REGEX))
+            throw new ValidationException(EXCEPTION_INVALID_EMAIL_MESSAGE);
+
+        Optional<Users> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isPresent()){
+            if(userGatewayService.revokeTokens(email)){
+
+                log.info("USER SERVICE ::: All User Tokens revoked for {}", optionalUser.get().getEmail());
+                userRepository.delete(optionalUser.get());
+            } else {
+                throw new GatewayException(EXCEPTION_GATEWAY_MESSAGE);
+            }
+        } else {
+            throw new GenericException(EXCEPTION_USER_NOT_FOUND_MESSAGE);
+        }
     }
 }

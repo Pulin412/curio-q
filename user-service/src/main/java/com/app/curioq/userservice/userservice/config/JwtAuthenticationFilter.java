@@ -47,6 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("AUTHENTICATION FILTER ::: Authentication Incoming Request");
         final String authHeader = request.getHeader("Authorization");
         final String token;
 
@@ -64,6 +65,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 Claims claims = validationService.getClaimsFromToken(token);
                 if(claims.getExpiration().after(new Date())){
+                    log.info("AUTHENTICATION FILTER ::: User authenticated with Authority {}", userDetails.getAuthorities());
+
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

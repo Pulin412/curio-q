@@ -46,4 +46,13 @@ public class GlobalExceptionController {
                 LocalDateTime.now(),
                 ex.getMessage());
     }
+
+    @ExceptionHandler(GatewayException.class)
+    @ResponseStatus(value = HttpStatus.BAD_GATEWAY)
+    public ErrorMessage validationException(GatewayException ex, WebRequest request) {
+
+        return new ErrorMessage(
+                LocalDateTime.now(),
+                ex.getMessage());
+    }
 }

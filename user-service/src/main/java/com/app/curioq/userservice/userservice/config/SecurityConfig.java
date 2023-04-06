@@ -1,5 +1,6 @@
 package com.app.curioq.userservice.userservice.config;
 
+import com.app.curioq.userservice.userservice.enums.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,8 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/register", "/api/v1/login").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
                         .anyRequest().authenticated())
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

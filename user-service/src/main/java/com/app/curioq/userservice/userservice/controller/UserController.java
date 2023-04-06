@@ -30,13 +30,20 @@ public class UserController {
         return ResponseEntity.ok(userService.login(authenticationRequestDTO));
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<UserResponseDTO> getUser(@RequestParam String email){
+        return ResponseEntity.ok(userService.getUser(email));
+    }
+
     @GetMapping("/admin/users")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<UserResponseDTO> getUser(@RequestParam String email){
-        return ResponseEntity.ok(userService.getUser(email));
+    @DeleteMapping("/admin/user")
+    public ResponseEntity<String> remove(@RequestParam String email){
+        userService.removeUser(email);
+        return ResponseEntity.ok("User deleted successfully");
     }
+
 }

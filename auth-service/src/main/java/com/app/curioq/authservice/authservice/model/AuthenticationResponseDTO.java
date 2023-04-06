@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponseDTO {
     private String token;
+    private boolean tokensRevoked;
 }

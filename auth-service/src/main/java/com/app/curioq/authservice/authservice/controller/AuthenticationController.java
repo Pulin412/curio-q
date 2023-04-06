@@ -29,4 +29,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(jwtService.extractUsername(jwtToken));
     }
 
+    @PostMapping("/revoke")
+    public ResponseEntity<AuthenticationResponseDTO> revokeTokens(@RequestBody AuthenticationRequestDTO authenticationRequestDTO){
+        return ResponseEntity.ok(authenticationService.revokeAllTokens(authenticationRequestDTO.getEmail()));
+    }
+
 }

@@ -13,8 +13,8 @@ public class AuthenticationGatewayConfig {
     @Value("${user.gateway.token.generate.url}")
     private String generateTokenUrl;
 
-    @Value("${user.gateway.getUserFromToken.url}")
-    private String getUserFromTokenUrl;
+    @Value("${user.gateway.revokeTokens.url}")
+    private String revokeTokensForUserUrl;
 
     @Value("${auth.secret.key}")
     private String secretKey;
@@ -25,12 +25,7 @@ public class AuthenticationGatewayConfig {
     }
 
     @Bean
-    public WebClient userWebClient() {
-        return WebClient.builder().baseUrl(getUserFromTokenUrl).build();
-    }
-
-    @Bean
-    public WebClient isTokenValidWebClient() {
-        return WebClient.builder().baseUrl(getUserFromTokenUrl).build();
+    public WebClient revokeTokensWebClient() {
+        return WebClient.builder().baseUrl(revokeTokensForUserUrl).build();
     }
 }

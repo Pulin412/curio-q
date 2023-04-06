@@ -1,6 +1,5 @@
 package com.app.curioq.userservice.userservice.model;
 
-import com.app.curioq.userservice.userservice.enums.Role;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

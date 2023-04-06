@@ -6,12 +6,14 @@ import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
 import com.app.curioq.userservice.userservice.model.RegisterRequestDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import static com.app.curioq.userservice.userservice.utils.UserServiceConstants.*;
 
 @Service
+@Slf4j
 public class ValidationService {
 
     private final AuthenticationGatewayConfig authenticationGatewayConfig;
@@ -21,6 +23,8 @@ public class ValidationService {
     }
 
     public void validateUser(RegisterRequestDTO registerRequestDTO) {
+        log.info("VALIDATION SERVICE ::: Validating User details for Registration request");
+
         if (registerRequestDTO.getFirstname() == null || registerRequestDTO.getFirstname().isEmpty()) {
             throw new ValidationException(EXCEPTION_INVALID_FIRST_NAME_MESSAGE);
         }
@@ -33,6 +37,8 @@ public class ValidationService {
     }
 
     public void validateLogin(AuthenticationRequestDTO authenticationRequestDTO) {
+        log.info("VALIDATION SERVICE ::: Validating User details for Login request");
+
         if (StringUtils.isEmpty(authenticationRequestDTO)) {
             throw new ValidationException(EXCEPTION_INVALID_EMAIL_MESSAGE);
         }
