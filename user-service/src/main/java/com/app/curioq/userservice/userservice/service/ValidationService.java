@@ -4,6 +4,7 @@ import com.app.curioq.userservice.userservice.config.AuthenticationGatewayConfig
 import com.app.curioq.userservice.userservice.exceptions.ValidationException;
 import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
 import com.app.curioq.userservice.userservice.model.RegisterRequestDTO;
+import com.app.curioq.userservice.userservice.model.UserFollowRequestDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -54,5 +55,15 @@ public class ValidationService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public void validateUserFollowerRequest(UserFollowRequestDTO userFollowRequestDTO) {
+        log.info("VALIDATION SERVICE ::: Validating User Follow request");
+
+        long followerId = userFollowRequestDTO.getFollowerId();
+        long followeeId = userFollowRequestDTO.getFolloweeId();
+
+        if(followerId <= 0L || followeeId <= 0L || followerId == followeeId)
+            throw new ValidationException(EXCEPTION_INVALID_FOLLOW_REQUEST_MESSAGE);
     }
 }

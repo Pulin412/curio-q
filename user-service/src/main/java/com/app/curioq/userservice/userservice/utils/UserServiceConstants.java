@@ -14,5 +14,6 @@ public class UserServiceConstants {
     public static final String EXCEPTION_INVALID_PASSWORD_MESSAGE = "Password not entered";
     public static final String EXCEPTION_USER_NOT_FOUND_MESSAGE = "User not found";
     public static final String EXCEPTION_GATEWAY_MESSAGE = "Error while communicating via Gateway";
+    public static final String EXCEPTION_INVALID_FOLLOW_REQUEST_MESSAGE = "Invalid User follow details";
     public static final String EXCEPTION_TECHNICAL_ISSUE_MESSAGE = "Technical Error occurred, try again later";
 }

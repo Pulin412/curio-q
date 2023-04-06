@@ -1,9 +1,6 @@
 package com.app.curioq.userservice.userservice.service;
 
-import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
-import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
-import com.app.curioq.userservice.userservice.model.RegisterRequestDTO;
-import com.app.curioq.userservice.userservice.model.UserResponseDTO;
+import com.app.curioq.userservice.userservice.model.*;
 
 import java.util.List;
 
@@ -13,4 +10,5 @@ public interface UserService {
     List<UserResponseDTO> getAllUsers();
     UserResponseDTO getUser(String email);
     void removeUser(String email);
+    UserResponseDTO followUsers(UserFollowRequestDTO userFollowRequestDTO);
 }

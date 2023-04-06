@@ -3,14 +3,12 @@ package com.app.curioq.userservice.userservice.service;
 import com.app.curioq.userservice.userservice.entity.Users;
 import com.app.curioq.userservice.userservice.exceptions.*;
 import com.app.curioq.userservice.userservice.gateway.UserGatewayService;
-import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
-import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
-import com.app.curioq.userservice.userservice.model.RegisterRequestDTO;
-import com.app.curioq.userservice.userservice.model.UserResponseDTO;
+import com.app.curioq.userservice.userservice.model.*;
 import com.app.curioq.userservice.userservice.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,7 @@ import static com.app.curioq.userservice.userservice.utils.UserServiceConstants.
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserGatewayService userGatewayService;
@@ -36,14 +34,14 @@ public class UserServiceImpl implements UserService{
         validationService.validateUser(registerRequestDTO);
 
         Optional<Users> optionalUser = userRepository.findByEmail(registerRequestDTO.getEmail());
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             throw new UserAlreadyPresentException(EXCEPTION_USER_ALREADY_PRESENT_MESSAGE);
         }
         Users savedUser = userRepository.save(mapUserDtoToEntity(registerRequestDTO));
 
         String token = userGatewayService.generateToken(savedUser);
 
-        if(token == null)
+        if (token == null)
             throw new GatewayException(EXCEPTION_GATEWAY_MESSAGE);
 
         log.info("USER SERVICE ::: Token generated for {}", savedUser.getEmail());
@@ -76,12 +74,12 @@ public class UserServiceImpl implements UserService{
         Optional<Users> optionalUser = userRepository.findByEmail(
                 authenticationRequestDTO.getEmail());
 
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             log.info("USER SERVICE ::: Found User From DB");
             Users userFromDb = optionalUser.get();
             String encodedPassword = userFromDb.getPassword();
 
-            if(passwordEncoder.matches(authenticationRequestDTO.getPassword(), encodedPassword)){
+            if (passwordEncoder.matches(authenticationRequestDTO.getPassword(), encodedPassword)) {
                 String token = "";
 
             /*
@@ -91,7 +89,7 @@ public class UserServiceImpl implements UserService{
              */
                 Claims claims = validationService.getClaimsFromToken(userFromDb.getToken());
 
-                if(userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject()) && claims.getExpiration().after(new Date())){
+                if (userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject()) && claims.getExpiration().after(new Date())) {
                     token = userFromDb.getToken();
                 } else {
                     log.info("USER SERICE ::: Token not available, generating new token for {}", userFromDb.getEmail());
@@ -112,13 +110,13 @@ public class UserServiceImpl implements UserService{
     public List<UserResponseDTO> getAllUsers() {
         List<Users> responseList = userRepository.findAll();
         return responseList.stream().map(users ->
-            UserResponseDTO.builder()
-                    .firstname(users.getFirstname())
-                    .lastname(users.getLastname())
-                    .email(users.getEmail())
-                    .password(users.getPassword())
-                    .role(users.getRole().name())
-                    .build()).collect(Collectors.toList());
+                UserResponseDTO.builder()
+                        .firstname(users.getFirstname())
+                        .lastname(users.getLastname())
+                        .email(users.getEmail())
+                        .password(users.getPassword())
+                        .role(users.getRole().name())
+                        .build()).collect(Collectors.toList());
     }
 
     @Override
@@ -126,26 +124,28 @@ public class UserServiceImpl implements UserService{
         Optional<Users> optionalUser = userRepository.findByEmail(email);
         UserResponseDTO.UserResponseDTOBuilder userResponseDTOBuilder = UserResponseDTO.builder();
 
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             Users userFromDb = optionalUser.get();
             userResponseDTOBuilder
                     .firstname(userFromDb.getFirstname())
                     .lastname(userFromDb.getLastname())
                     .email(userFromDb.getEmail())
                     .password(userFromDb.getPassword())
-                    .role(userFromDb.getRole().name());
+                    .role(userFromDb.getRole().name())
+                    .followers(userFromDb.getFollowers().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
+                    .following(userFromDb.getFollowing().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()));
         }
         return userResponseDTOBuilder.build();
     }
 
     @Override
     public void removeUser(String email) {
-        if(email == null || !email.matches(VALIDATION_EMAIL_REGEX))
+        if (email == null || !email.matches(VALIDATION_EMAIL_REGEX))
             throw new ValidationException(EXCEPTION_INVALID_EMAIL_MESSAGE);
 
         Optional<Users> optionalUser = userRepository.findByEmail(email);
-        if(optionalUser.isPresent()){
-            if(userGatewayService.revokeTokens(email)){
+        if (optionalUser.isPresent()) {
+            if (userGatewayService.revokeTokens(email)) {
 
                 log.info("USER SERVICE ::: All User Tokens revoked for {}", optionalUser.get().getEmail());
                 userRepository.delete(optionalUser.get());
@@ -155,5 +155,29 @@ public class UserServiceImpl implements UserService{
         } else {
             throw new GenericException(EXCEPTION_USER_NOT_FOUND_MESSAGE);
         }
+    }
+
+    @Override
+    public UserResponseDTO followUsers(UserFollowRequestDTO userFollowRequestDTO) {
+        validationService.validateUserFollowerRequest(userFollowRequestDTO);
+
+        long followerId = userFollowRequestDTO.getFollowerId();
+        long followeeId = userFollowRequestDTO.getFolloweeId();
+
+        Optional<Users> optionalFollower = Optional.ofNullable(
+                userRepository.findById(followerId)
+                        .orElseThrow(() -> new UsernameNotFoundException(EXCEPTION_USER_NOT_PRESENT_MESSAGE + " : " + followerId)));
+
+        Optional<Users> optionalFollowee = Optional.ofNullable(
+                userRepository.findById(followeeId)
+                        .orElseThrow(() -> new UsernameNotFoundException(EXCEPTION_USER_NOT_PRESENT_MESSAGE + " : " + followeeId)));
+
+        Users followee = optionalFollowee.get();
+        Users follower = optionalFollower.get();
+
+        follower.getFollowing().add(followee);
+        userRepository.save(follower);
+
+        return UserResponseDTO.builder().response(follower.getEmail() + " is now following " + followee.getEmail()).build();
     }
 }

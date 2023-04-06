@@ -1,9 +1,6 @@
 package com.app.curioq.userservice.userservice.controller;
 
-import com.app.curioq.userservice.userservice.model.AuthenticationRequestDTO;
-import com.app.curioq.userservice.userservice.model.AuthenticationResponseDTO;
-import com.app.curioq.userservice.userservice.model.RegisterRequestDTO;
-import com.app.curioq.userservice.userservice.model.UserResponseDTO;
+import com.app.curioq.userservice.userservice.model.*;
 import com.app.curioq.userservice.userservice.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +17,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    /*
+    --------------------------------------------------------------------------------------------------------------------
+            End points without Authentication
+    --------------------------------------------------------------------------------------------------------------------
+     */
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody RegisterRequestDTO registerRequestDTO){
         return ResponseEntity.ok(userService.register(registerRequestDTO));
@@ -30,11 +32,28 @@ public class UserController {
         return ResponseEntity.ok(userService.login(authenticationRequestDTO));
     }
 
+    /*
+    --------------------------------------------------------------------------------------------------------------------
+            End points accessible by all Roles (Logged in users)
+    --------------------------------------------------------------------------------------------------------------------
+     */
+
     @GetMapping("/user")
     public ResponseEntity<UserResponseDTO> getUser(@RequestParam String email){
         return ResponseEntity.ok(userService.getUser(email));
     }
 
+
+    @PostMapping("/follow")
+    public ResponseEntity<UserResponseDTO> followUsers(@RequestBody UserFollowRequestDTO userFollowRequestDTO){
+        return ResponseEntity.ok(userService.followUsers(userFollowRequestDTO));
+    }
+
+    /*
+    --------------------------------------------------------------------------------------------------------------------
+            End points accessible by ONLY ADMIN Role
+    --------------------------------------------------------------------------------------------------------------------
+     */
     @GetMapping("/admin/users")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
