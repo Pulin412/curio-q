@@ -11,6 +11,7 @@ import com.app.curioq.userservice.userservice.model.UserResponseDTO;
 import com.app.curioq.userservice.userservice.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final UserGatewayService userGatewayService;
     private final ValidationService validationService;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public AuthenticationResponseDTO register(RegisterRequestDTO registerRequestDTO) {
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService{
                 .firstname(registerRequestDTO.getFirstname())
                 .lastname(registerRequestDTO.getLastname())
                 .email(registerRequestDTO.getEmail())
-                .password(registerRequestDTO.getPassword())
+                .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
                 .role(registerRequestDTO.getRole())
                 .build();
     }
@@ -65,27 +67,35 @@ public class UserServiceImpl implements UserService{
     public AuthenticationResponseDTO login(AuthenticationRequestDTO authenticationRequestDTO) {
         validationService.validateLogin(authenticationRequestDTO);
 
-        Optional<Users> optionalUser = userRepository.findByEmailAndPassword(authenticationRequestDTO.getEmail(), authenticationRequestDTO.getPassword());
+        Optional<Users> optionalUser = userRepository.findByEmail(
+                authenticationRequestDTO.getEmail());
+
         if(optionalUser.isPresent()){
             Users userFromDb = optionalUser.get();
-            String token = "";
+            String encodedPassword = userFromDb.getPassword();
+
+            if(passwordEncoder.matches(authenticationRequestDTO.getPassword(), encodedPassword)){
+                String token = "";
 
             /*
                 - If user already has a token and its not expired, return token
                 - If user doesn't have a token or if the token is expired, remove all user tokens (expired)
                    and generate a new token.
              */
-            Claims claims = validationService.getClaimsFromToken(userFromDb.getToken());
+                Claims claims = validationService.getClaimsFromToken(userFromDb.getToken());
 
-            if(userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject()) && claims.getExpiration().after(new Date())){
-                token = userFromDb.getToken();
+                if(userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject()) && claims.getExpiration().after(new Date())){
+                    token = userFromDb.getToken();
+                } else {
+
+                    token = userGatewayService.generateToken(userFromDb);
+                    saveToken(userFromDb, token);
+                }
+
+                return AuthenticationResponseDTO.builder().token(userFromDb.getToken()).build();
             } else {
-
-                token = userGatewayService.generateToken(userFromDb);
-                saveToken(userFromDb, token);
+                throw new InvalidLoginException(EXCEPTION_INVALID_LOGIN_MESSAGE);
             }
-
-            return AuthenticationResponseDTO.builder().token(userFromDb.getToken()).build();
         } else {
             throw new InvalidLoginException(EXCEPTION_INVALID_LOGIN_MESSAGE);
         }
