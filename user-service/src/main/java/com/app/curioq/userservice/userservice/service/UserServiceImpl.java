@@ -6,13 +6,13 @@ import com.app.curioq.userservice.userservice.gateway.UserGatewayService;
 import com.app.curioq.userservice.userservice.model.*;
 import com.app.curioq.userservice.userservice.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,17 +87,18 @@ public class UserServiceImpl implements UserService {
                 - If user doesn't have a token or if the token is expired, remove all user tokens (expired)
                    and generate a new token.
              */
-                Claims claims = validationService.getClaimsFromToken(userFromDb.getToken());
-
-                if (userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject()) && claims.getExpiration().after(new Date())) {
-                    token = userFromDb.getToken();
-                } else {
+                try {
+                    Claims claims = validationService.getClaimsFromToken(userFromDb.getToken());
+                    if (userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject())) {
+                        token = userFromDb.getToken();
+                    }
+                } catch (ExpiredJwtException e) {
                     log.info("USER SERICE ::: Token not available, generating new token for {}", userFromDb.getEmail());
                     token = userGatewayService.generateToken(userFromDb);
                     saveToken(userFromDb, token);
                 }
 
-                return AuthenticationResponseDTO.builder().token(userFromDb.getToken()).build();
+                return AuthenticationResponseDTO.builder().token(token).build();
             } else {
                 throw new InvalidLoginException(EXCEPTION_INVALID_LOGIN_MESSAGE);
             }
@@ -111,6 +112,7 @@ public class UserServiceImpl implements UserService {
         List<Users> responseList = userRepository.findAll();
         return responseList.stream().map(users ->
                 UserResponseDTO.builder()
+                        .userId(users.getId())
                         .firstname(users.getFirstname())
                         .lastname(users.getLastname())
                         .email(users.getEmail())
@@ -127,6 +129,7 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             Users userFromDb = optionalUser.get();
             userResponseDTOBuilder
+                    .userId(userFromDb.getId())
                     .firstname(userFromDb.getFirstname())
                     .lastname(userFromDb.getLastname())
                     .email(userFromDb.getEmail())

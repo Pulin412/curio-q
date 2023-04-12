@@ -16,6 +16,7 @@ import java.util.Set;
 public class UserResponseDTO {
     private String response;
 
+    private Long userId;
     private String firstname;
     private String lastname;
     private String email;
