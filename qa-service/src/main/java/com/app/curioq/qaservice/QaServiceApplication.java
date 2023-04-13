@@ -1,4 +1,4 @@
-package com.app.curioq.qaservice.qaservice;
+package com.app.curioq.qaservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

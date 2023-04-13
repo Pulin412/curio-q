@@ -1,5 +1,6 @@
 package com.app.curioq.userservice.service;
 
+import com.app.curioq.securitylib.service.JwtValidationService;
 import com.app.curioq.userservice.entity.Users;
 import com.app.curioq.userservice.exceptions.*;
 import com.app.curioq.userservice.gateway.UserGatewayService;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserGatewayService userGatewayService;
     private final ValidationService validationService;
+    private final JwtValidationService jwtValidationService;
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
@@ -88,7 +90,7 @@ public class UserServiceImpl implements UserService {
                    and generate a new token.
              */
                 try {
-                    Claims claims = validationService.getClaimsFromToken(userFromDb.getToken());
+                    Claims claims = jwtValidationService.getClaimsFromToken(userFromDb.getToken());
                     if (userFromDb.getToken() != null && userFromDb.getEmail().equalsIgnoreCase(claims.getSubject())) {
                         token = userFromDb.getToken();
                     }

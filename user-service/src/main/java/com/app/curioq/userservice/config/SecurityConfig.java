@@ -1,5 +1,6 @@
 package com.app.curioq.userservice.config;
 
+import com.app.curioq.securitylib.config.JwtAuthenticationFilter;
 import com.app.curioq.userservice.enums.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;

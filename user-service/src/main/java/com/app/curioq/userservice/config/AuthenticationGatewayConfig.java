@@ -16,9 +16,6 @@ public class AuthenticationGatewayConfig {
     @Value("${user.gateway.revokeTokens.url}")
     private String revokeTokensForUserUrl;
 
-    @Value("${auth.secret.key}")
-    private String secretKey;
-
     @Bean
     public WebClient tokenWebClient() {
         return WebClient.builder().baseUrl(generateTokenUrl).build();

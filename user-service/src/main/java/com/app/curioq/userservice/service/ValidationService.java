@@ -1,12 +1,9 @@
 package com.app.curioq.userservice.service;
 
-import com.app.curioq.userservice.config.AuthenticationGatewayConfig;
 import com.app.curioq.userservice.exceptions.ValidationException;
 import com.app.curioq.userservice.model.AuthenticationRequestDTO;
 import com.app.curioq.userservice.model.RegisterRequestDTO;
 import com.app.curioq.userservice.model.UserFollowRequestDTO;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,12 +13,6 @@ import static com.app.curioq.userservice.utils.UserServiceConstants.*;
 @Service
 @Slf4j
 public class ValidationService {
-
-    private final AuthenticationGatewayConfig authenticationGatewayConfig;
-
-    public ValidationService(AuthenticationGatewayConfig authenticationGatewayConfig) {
-        this.authenticationGatewayConfig = authenticationGatewayConfig;
-    }
 
     public void validateUser(RegisterRequestDTO registerRequestDTO) {
         log.info("VALIDATION SERVICE ::: Validating User details for Registration request");
@@ -46,15 +37,6 @@ public class ValidationService {
         if (StringUtils.isEmpty(authenticationRequestDTO.getPassword())) {
             throw new ValidationException(EXCEPTION_INVALID_PASSWORD_MESSAGE);
         }
-    }
-
-    public Claims getClaimsFromToken(String token) {
-
-        return Jwts.parserBuilder()
-                .setSigningKey(authenticationGatewayConfig.getSecretKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 
     public void validateUserFollowerRequest(UserFollowRequestDTO userFollowRequestDTO) {

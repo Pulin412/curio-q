@@ -1,7 +1,8 @@
-package com.app.curioq.userservice.config;
+package com.app.curioq.securitylib.config;
 
-import com.app.curioq.userservice.exceptions.ErrorMessage;
-import com.app.curioq.userservice.service.ValidationService;
+import com.app.curioq.securitylib.exception.ErrorMessage;
+import com.app.curioq.securitylib.service.JwtValidationService;
+import com.app.curioq.securitylib.utils.SecurityConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -27,10 +28,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
-
-import static com.app.curioq.userservice.utils.UserServiceConstants.CUSTOM_DATE_TIME_FORMATTER;
-import static com.app.curioq.userservice.utils.UserServiceConstants.TOKEN_PREFIX_LENGTH;
 
 @Component
 @Slf4j
@@ -38,20 +37,22 @@ import static com.app.curioq.userservice.utils.UserServiceConstants.TOKEN_PREFIX
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
-    private final ValidationService validationService;
-    private final AuthenticationGatewayConfig authenticationGatewayConfig;
+    private final JwtValidationService jwtValidationService;
     private ObjectMapper mapper;
+
+    public static final int TOKEN_PREFIX_LENGTH = "Bearer ".length();
+    public static final DateTimeFormatter CUSTOM_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        log.info("AUTHENTICATION FILTER ::: Authentication Incoming Request");
+        log.info("SECURITY-LIB AUTH FILTER ::: Authentication Incoming Request");
         final String authHeader = request.getHeader("Authorization");
         final String token;
 
-        if(authHeader == null) {
+        if (authHeader == null) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -60,12 +61,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             token = authHeader.substring(TOKEN_PREFIX_LENGTH);
             String userEmail = fetchEmailFromToken(token);
 
-            if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                Claims claims = validationService.getClaimsFromToken(token);
-                if(claims.getExpiration().after(new Date())){
-                    log.info("AUTHENTICATION FILTER ::: User authenticated with Authority {}", userDetails.getAuthorities());
+                Claims claims = jwtValidationService.getClaimsFromToken(token);
+
+                if (claims.getExpiration().after(new Date())) {
+                    log.info("SECURITY-LIB AUTH FILTER ::: User authenticated with Authority {}", userDetails.getAuthorities());
 
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -74,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-        } catch (Exception e){
+        } catch (Exception e) {
             ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), e.getMessage());
             writeToResponse(response, errorMessage);
         }
@@ -82,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String fetchEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(authenticationGatewayConfig.getSecretKey())
+                .setSigningKey(SecurityConstants.SECRET_KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
