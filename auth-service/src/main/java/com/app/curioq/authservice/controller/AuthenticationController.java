@@ -1,9 +1,9 @@
-package com.app.curioq.authservice.authservice.controller;
+package com.app.curioq.authservice.controller;
 
-import com.app.curioq.authservice.authservice.model.AuthenticationRequestDTO;
-import com.app.curioq.authservice.authservice.model.AuthenticationResponseDTO;
-import com.app.curioq.authservice.authservice.service.AuthenticationService;
-import com.app.curioq.authservice.authservice.service.JwtService;
+import com.app.curioq.authservice.model.AuthenticationRequestDTO;
+import com.app.curioq.authservice.model.AuthenticationResponseDTO;
+import com.app.curioq.authservice.service.AuthenticationService;
+import com.app.curioq.authservice.service.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

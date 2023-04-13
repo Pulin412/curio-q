@@ -1,6 +1,6 @@
-package com.app.curioq.authservice.authservice.repository;
+package com.app.curioq.authservice.repository;
 
-import com.app.curioq.authservice.authservice.entity.Token;
+import com.app.curioq.authservice.entity.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

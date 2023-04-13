@@ -1,4 +1,4 @@
-package com.app.curioq.authservice.authservice.enums;
+package com.app.curioq.authservice.enums;
 
 public enum TokenType {
     BEARER

@@ -1,4 +1,4 @@
-package com.app.curioq.authservice.authservice;
+package com.app.curioq.authservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

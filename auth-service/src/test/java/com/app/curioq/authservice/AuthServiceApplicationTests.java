@@ -1,4 +1,4 @@
-package com.app.curioq.authservice.authservice;
+package com.app.curioq.authservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

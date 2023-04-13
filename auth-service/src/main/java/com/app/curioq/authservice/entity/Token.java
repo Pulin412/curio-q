@@ -1,6 +1,6 @@
-package com.app.curioq.authservice.authservice.entity;
+package com.app.curioq.authservice.entity;
 
-import com.app.curioq.authservice.authservice.enums.TokenType;
+import com.app.curioq.authservice.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

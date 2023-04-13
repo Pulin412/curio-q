@@ -1,6 +1,6 @@
-package com.app.curioq.authservice.authservice.service;
+package com.app.curioq.authservice.service;
 
-import com.app.curioq.authservice.authservice.model.AuthenticationResponseDTO;
+import com.app.curioq.authservice.model.AuthenticationResponseDTO;
 
 public interface AuthenticationService {
     AuthenticationResponseDTO generateToken(String userId);

@@ -1,9 +1,9 @@
-package com.app.curioq.authservice.authservice.service;
+package com.app.curioq.authservice.service;
 
-import com.app.curioq.authservice.authservice.entity.Token;
-import com.app.curioq.authservice.authservice.enums.TokenType;
-import com.app.curioq.authservice.authservice.model.AuthenticationResponseDTO;
-import com.app.curioq.authservice.authservice.repository.TokenRepository;
+import com.app.curioq.authservice.entity.Token;
+import com.app.curioq.authservice.enums.TokenType;
+import com.app.curioq.authservice.model.AuthenticationResponseDTO;
+import com.app.curioq.authservice.repository.TokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

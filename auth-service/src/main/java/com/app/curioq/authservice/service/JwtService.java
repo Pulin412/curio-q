@@ -1,4 +1,4 @@
-package com.app.curioq.authservice.authservice.service;
+package com.app.curioq.authservice.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package com.app.curioq.authservice.authservice.model;
+package com.app.curioq.authservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
