@@ -22,6 +22,10 @@ public class Question {
     private Long id;
     private String title;
     private String questionDescription;
+    @Column(name = "useremail")
+    private String userEmail;
+    @Column(name = "userid")
+    private long userId;
 
     @JsonIgnoreProperties("question")
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)

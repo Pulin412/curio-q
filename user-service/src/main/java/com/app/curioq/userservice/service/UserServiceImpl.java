@@ -185,4 +185,20 @@ public class UserServiceImpl implements UserService {
 
         return UserResponseDTO.builder().response(follower.getEmail() + " is now following " + followee.getEmail()).build();
     }
+
+    @Override
+    public UserResponseDTO getUserById(Long userId) {
+        Users userFromDb = userRepository.findById(userId)
+                .orElseThrow(() -> new GenericException(EXCEPTION_USER_NOT_PRESENT_MESSAGE));
+        return UserResponseDTO.builder()
+                .userId(userFromDb.getId())
+                .email(userFromDb.getEmail())
+                .firstname(userFromDb.getFirstname())
+                .lastname(userFromDb.getLastname())
+                .role(userFromDb.getRole().name())
+                .followers(userFromDb.getFollowers().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
+                .following(userFromDb.getFollowing().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
+                .password(userFromDb.getPassword())
+                .build();
+    }
 }

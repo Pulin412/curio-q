@@ -43,6 +43,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(email));
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
 
     @PostMapping("/follow")
     public ResponseEntity<UserResponseDTO> followUsers(@RequestBody UserFollowRequestDTO userFollowRequestDTO){
