@@ -1,4 +1,4 @@
-package com.app.curioq.qaservice.feign;
+package com.app.curioq.qaservice.gateway;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

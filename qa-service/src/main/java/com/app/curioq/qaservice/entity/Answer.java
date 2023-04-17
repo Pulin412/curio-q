@@ -18,6 +18,10 @@ public class Answer {
     @SequenceGenerator(name = "answer_seq", sequenceName = "answer_seq", allocationSize = 1)
     private Long id;
     private String answerDescription;
+    @Column(name = "useremail")
+    private String userEmail;
+    @Column(name = "userid")
+    private long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")

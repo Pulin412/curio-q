@@ -2,7 +2,7 @@ package com.app.curioq.qaservice.service;
 
 import com.app.curioq.qaservice.entity.Answer;
 import com.app.curioq.qaservice.entity.Question;
-import com.app.curioq.qaservice.feign.UserResponseDTO;
+import com.app.curioq.qaservice.gateway.UserResponseDTO;
 import com.app.curioq.qaservice.gateway.QaGatewayService;
 import com.app.curioq.qaservice.model.AnswerRequestDTO;
 import com.app.curioq.qaservice.model.QAResponseDTO;
@@ -32,7 +32,6 @@ public class QAServiceImpl implements QAService{
     @Transactional
     public QAResponseDTO submitQuestion(QuestionRequestDTO questionRequestDTO, String jwtToken) {
         String userEmail = questionRequestDTO.getEmail();
-        String header = "Bearer " + jwtToken;
         UserResponseDTO userResponseDTO = qaGatewayService.fetchUserByEmail(userEmail, jwtToken);
 
         Question question = Question.builder()
@@ -55,14 +54,20 @@ public class QAServiceImpl implements QAService{
     }
 
     @Transactional
-    public QAResponseDTO submitAnswer(AnswerRequestDTO answerRequestDTO) {
+    public QAResponseDTO submitAnswer(AnswerRequestDTO answerRequestDTO, String jwtToken) {
         Question questionFromDb = questionRepository.findById(answerRequestDTO.getQuestionId())
                 .orElseThrow(() -> new RuntimeException("Question not found"));
 
         List<Answer> answers = questionFromDb.getAnswers();
+
+        String userEmail = answerRequestDTO.getEmail();
+        UserResponseDTO userResponseDTO = qaGatewayService.fetchUserByEmail(userEmail, jwtToken);
+
         Answer answer = Answer.builder()
                 .question(questionFromDb)
                 .answerDescription(answerRequestDTO.getAnswer())
+                .userEmail(userResponseDTO.getEmail())
+                .userId(userResponseDTO.getUserId())
                 .build();
 
         Answer answerFromDb = answerRepository.save(answer);

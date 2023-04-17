@@ -1,6 +1,5 @@
 package com.app.curioq.qaservice.gateway;
 
-import com.app.curioq.qaservice.feign.UserResponseDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

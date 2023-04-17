@@ -11,5 +11,5 @@ public interface QAService {
 
     QAResponseDTO submitQuestion(QuestionRequestDTO questionRequestDTO, String jwtToken);
     List<Question> findAllQuestions();
-    QAResponseDTO submitAnswer(AnswerRequestDTO answerRequestDTO);
+    QAResponseDTO submitAnswer(AnswerRequestDTO answerRequestDTO, String jwtToken);
 }

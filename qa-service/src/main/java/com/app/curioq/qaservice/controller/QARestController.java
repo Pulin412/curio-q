@@ -31,7 +31,7 @@ public class QARestController {
     public ResponseEntity<QAResponseDTO> submitAnswer(@RequestBody AnswerRequestDTO answerRequestDTO,
                                                       @RequestHeader String jwtToken){
         validationService.validateAnswerRequest(answerRequestDTO, jwtToken);
-        return ResponseEntity.ok(qaService.submitAnswer(answerRequestDTO));
+        return ResponseEntity.ok(qaService.submitAnswer(answerRequestDTO, jwtToken));
     }
 
     @GetMapping("/questions")

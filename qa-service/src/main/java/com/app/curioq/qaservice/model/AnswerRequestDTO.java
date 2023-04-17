@@ -13,4 +13,5 @@ public class AnswerRequestDTO {
 
     private Long questionId;
     private String answer;
+    private String email;
 }
