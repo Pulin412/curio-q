@@ -13,4 +13,6 @@ public interface UserService {
     UserResponseDTO followUsers(UserFollowRequestDTO userFollowRequestDTO);
 
     UserResponseDTO getUserById(Long userId);
+
+    UserResponseDTO likeUser(UserLikeRequestDTO userLikeRequestDTO);
 }

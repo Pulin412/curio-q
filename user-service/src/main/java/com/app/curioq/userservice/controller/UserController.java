@@ -54,6 +54,11 @@ public class UserController {
         return ResponseEntity.ok(userService.followUsers(userFollowRequestDTO));
     }
 
+    @PostMapping("/like")
+    public ResponseEntity<UserResponseDTO> likeUsers(@RequestBody UserLikeRequestDTO userLikeRequestDTO){
+        return ResponseEntity.ok(userService.likeUser(userLikeRequestDTO));
+    }
+
     /*
     --------------------------------------------------------------------------------------------------------------------
             End points accessible by ONLY ADMIN Role

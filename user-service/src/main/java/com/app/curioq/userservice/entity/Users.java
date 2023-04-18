@@ -41,6 +41,12 @@ public class Users implements UserDetails {
             inverseJoinColumns = { @JoinColumn(name = "follower_id") })
     private Set<Users> following = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_likes",
+            joinColumns = { @JoinColumn(name = "liker_id") },
+            inverseJoinColumns = { @JoinColumn(name = "liked_user_id") })
+    private Set<Users> likes = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

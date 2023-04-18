@@ -120,6 +120,9 @@ public class UserServiceImpl implements UserService {
                         .email(users.getEmail())
                         .password(users.getPassword())
                         .role(users.getRole().name())
+                        .followers(users.getFollowers().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
+                        .following(users.getFollowing().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
+                        .likes(users.getLikes().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
                         .build()).collect(Collectors.toList());
     }
 
@@ -138,7 +141,8 @@ public class UserServiceImpl implements UserService {
                     .password(userFromDb.getPassword())
                     .role(userFromDb.getRole().name())
                     .followers(userFromDb.getFollowers().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
-                    .following(userFromDb.getFollowing().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()));
+                    .following(userFromDb.getFollowing().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
+                    .likes(userFromDb.getLikes().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()));
         }
         return userResponseDTOBuilder.build();
     }
@@ -198,7 +202,22 @@ public class UserServiceImpl implements UserService {
                 .role(userFromDb.getRole().name())
                 .followers(userFromDb.getFollowers().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
                 .following(userFromDb.getFollowing().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
+                .likes(userFromDb.getLikes().stream().map(Users::getEmail).collect(Collectors.toUnmodifiableSet()))
                 .password(userFromDb.getPassword())
                 .build();
+    }
+
+    @Override
+    public UserResponseDTO likeUser(UserLikeRequestDTO userLikeRequestDTO) {
+        long userTobeLikedId = userLikeRequestDTO.getBeingLikedId();
+        long userLikingId = userLikeRequestDTO.getLikeId();
+
+        Users user = userRepository.findById(userLikingId).orElseThrow(() -> new GenericException(EXCEPTION_USER_NOT_PRESENT_MESSAGE));
+        Users userToLike = userRepository.findById(userTobeLikedId).orElseThrow(() -> new GenericException(EXCEPTION_USER_NOT_PRESENT_MESSAGE));
+
+        user.getLikes().add(userToLike);
+        userRepository.save(user);
+
+        return UserResponseDTO.builder().response(user.getEmail() + " liked " + userToLike.getEmail()).build();
     }
 }

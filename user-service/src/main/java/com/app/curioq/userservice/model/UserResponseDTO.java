@@ -24,4 +24,5 @@ public class UserResponseDTO {
     private String role;
     private Set<String> followers;
     private Set<String> following;
+    private Set<String> likes;
 }
