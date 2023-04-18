@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-public class User_QaGatewayServiceImpl implements QaGatewayService {
+public class UserGatewayServiceImpl implements UserGatewayService {
 
     @Override
     public UserResponseDTO fetchUserByEmail(String email, String jwtToken) {
         String url = "http://localhost:8081/api/v1/user?email=" + email;
         return WebClient.builder()
                 .baseUrl(url)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, jwtToken)
                 .build()
                 .get()
                 .retrieve()

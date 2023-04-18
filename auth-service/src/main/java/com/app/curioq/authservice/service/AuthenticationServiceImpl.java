@@ -59,4 +59,9 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         log.info("AUTHENTICATION SERVICE ::: All Tokens Revoked Successfully");
         return AuthenticationResponseDTO.builder().tokensRevoked(true).build();
     }
+
+    @Override
+    public boolean validateToken(String token, String userEmail) {
+        return jwtService.isTokenValid(token, userEmail);
+    }
 }

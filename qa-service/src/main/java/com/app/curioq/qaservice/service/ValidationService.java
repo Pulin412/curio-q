@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ValidationService {
 
-    public void validateQuestionRequest(QuestionRequestDTO questionRequestDTO, String jwtToken) {
+    public void validateQuestionRequest(QuestionRequestDTO questionRequestDTO) {
         if (questionRequestDTO.getTitle() == null ||
                 questionRequestDTO.getTitle().isEmpty() ||
                 questionRequestDTO.getDescription() == null ||
@@ -17,20 +17,14 @@ public class ValidationService {
 
             throw new InvalidRequestException(QAConstants.EXCEPTION_INVALID_REQUEST_MESSAGE);
         }
-        validateToken(jwtToken);
     }
 
-    private void validateToken(String jwtToken) {
-        // TODO : add impl here to validate token
-    }
-
-    public void validateAnswerRequest(AnswerRequestDTO answerRequestDTO, String jwtToken) {
+    public void validateAnswerRequest(AnswerRequestDTO answerRequestDTO) {
         if (answerRequestDTO.getAnswer() == null ||
                 answerRequestDTO.getAnswer().isEmpty() ||
                 answerRequestDTO.getQuestionId() == null) {
 
             throw new InvalidRequestException(QAConstants.EXCEPTION_INVALID_REQUEST_MESSAGE);
         }
-        validateToken(jwtToken);
     }
 }

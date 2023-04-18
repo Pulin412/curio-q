@@ -2,8 +2,9 @@ package com.app.curioq.qaservice.service;
 
 import com.app.curioq.qaservice.entity.Answer;
 import com.app.curioq.qaservice.entity.Question;
+import com.app.curioq.qaservice.exceptions.GenericException;
+import com.app.curioq.qaservice.gateway.UserGatewayService;
 import com.app.curioq.qaservice.gateway.UserResponseDTO;
-import com.app.curioq.qaservice.gateway.QaGatewayService;
 import com.app.curioq.qaservice.model.AnswerRequestDTO;
 import com.app.curioq.qaservice.model.QAResponseDTO;
 import com.app.curioq.qaservice.model.QuestionRequestDTO;
@@ -20,19 +21,25 @@ public class QAServiceImpl implements QAService{
 
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
-    private final QaGatewayService qaGatewayService;
+    private final UserGatewayService userGatewayService;
 
-    public QAServiceImpl(QuestionRepository questionRepository, AnswerRepository answerRepository, QaGatewayService qaGatewayService) {
+    public QAServiceImpl(QuestionRepository questionRepository, AnswerRepository answerRepository, UserGatewayService userGatewayService) {
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
-        this.qaGatewayService = qaGatewayService;
+        this.userGatewayService = userGatewayService;
     }
 
 
     @Transactional
     public QAResponseDTO submitQuestion(QuestionRequestDTO questionRequestDTO, String jwtToken) {
         String userEmail = questionRequestDTO.getEmail();
-        UserResponseDTO userResponseDTO = qaGatewayService.fetchUserByEmail(userEmail, jwtToken);
+        UserResponseDTO userResponseDTO;
+
+        try {
+            userResponseDTO = userGatewayService.fetchUserByEmail(userEmail, jwtToken);
+        } catch (Exception e){
+            throw new GenericException("Issue with connecting with User Service, details - " + e.getMessage());
+        }
 
         Question question = Question.builder()
                 .title(questionRequestDTO.getTitle())
@@ -61,7 +68,13 @@ public class QAServiceImpl implements QAService{
         List<Answer> answers = questionFromDb.getAnswers();
 
         String userEmail = answerRequestDTO.getEmail();
-        UserResponseDTO userResponseDTO = qaGatewayService.fetchUserByEmail(userEmail, jwtToken);
+        UserResponseDTO userResponseDTO;
+
+        try {
+            userResponseDTO = userGatewayService.fetchUserByEmail(userEmail, jwtToken);
+        } catch (Exception e){
+            throw new GenericException("Issue with connecting with User Service, details - " + e.getMessage());
+        }
 
         Answer answer = Answer.builder()
                 .question(questionFromDb)

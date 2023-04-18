@@ -22,15 +22,15 @@ public class QARestController {
 
     @PostMapping("/question")
     public ResponseEntity<QAResponseDTO> submitQuestion(@RequestBody QuestionRequestDTO questionRequestDTO,
-                                                        @RequestHeader String jwtToken){
-        validationService.validateQuestionRequest(questionRequestDTO, jwtToken);
+                                                        @RequestHeader(name = "Authorization") String jwtToken){
+        validationService.validateQuestionRequest(questionRequestDTO);
         return ResponseEntity.ok(qaService.submitQuestion(questionRequestDTO, jwtToken));
     }
 
     @PostMapping("/answer")
     public ResponseEntity<QAResponseDTO> submitAnswer(@RequestBody AnswerRequestDTO answerRequestDTO,
-                                                      @RequestHeader String jwtToken){
-        validationService.validateAnswerRequest(answerRequestDTO, jwtToken);
+                                                      @RequestHeader(name = "Authorization") String jwtToken){
+        validationService.validateAnswerRequest(answerRequestDTO);
         return ResponseEntity.ok(qaService.submitAnswer(answerRequestDTO, jwtToken));
     }
 

@@ -34,4 +34,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.revokeAllTokens(authenticationRequestDTO.getEmail()));
     }
 
+    @PostMapping("/validate")
+    public ResponseEntity<Boolean> validateToken(@RequestParam String token, @RequestParam String email){
+        return ResponseEntity.ok(authenticationService.validateToken(token, email));
+    }
+
 }
