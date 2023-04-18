@@ -15,6 +15,7 @@ User Service
 - [x] User can register themselves with authentication (Basic and OAuth) : `User`
 - [x] User has profiles to manage user details (user_name, name, email, password) : `User`
 - [x] User can follow other users : `User`
+- [x] User can like other users : `User`
 - [x] User can remove other users, can reset passwords : `Admin`
 
 QA-Service
