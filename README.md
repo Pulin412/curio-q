@@ -19,8 +19,8 @@ User Service
 
 QA-Service
 
-- [ ] Users can ask questions : `User`
-- [ ] Users can reply to questions as answers : `User`
+- [x] Users can ask questions : `User`
+- [x] Users can reply to questions as answers : `User`
 - [ ] Users can like questions and answers : `User`
 
 Search Service
