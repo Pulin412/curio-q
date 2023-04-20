@@ -5,9 +5,7 @@ import com.app.curioq.qaservice.entity.Question;
 import com.app.curioq.qaservice.exceptions.GenericException;
 import com.app.curioq.qaservice.gateway.UserGatewayService;
 import com.app.curioq.qaservice.gateway.UserResponseDTO;
-import com.app.curioq.qaservice.model.AnswerRequestDTO;
-import com.app.curioq.qaservice.model.QAResponseDTO;
-import com.app.curioq.qaservice.model.QuestionRequestDTO;
+import com.app.curioq.qaservice.model.*;
 import com.app.curioq.qaservice.repository.AnswerRepository;
 import com.app.curioq.qaservice.repository.QuestionRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QAServiceImpl implements QAService{
@@ -47,6 +46,7 @@ public class QAServiceImpl implements QAService{
                 .answers(Collections.EMPTY_LIST)
                 .userEmail(userResponseDTO.getEmail())
                 .userId(userResponseDTO.getUserId())
+                .likedBy(Collections.EMPTY_SET)
                 .build();
 
         Question questionFromDb = questionRepository.save(question);
@@ -81,6 +81,7 @@ public class QAServiceImpl implements QAService{
                 .answerDescription(answerRequestDTO.getAnswer())
                 .userEmail(userResponseDTO.getEmail())
                 .userId(userResponseDTO.getUserId())
+                .likedBy(Collections.EMPTY_SET)
                 .build();
 
         Answer answerFromDb = answerRepository.save(answer);
@@ -92,5 +93,56 @@ public class QAServiceImpl implements QAService{
         return QAResponseDTO.builder()
                 .message("answer submitted with ID - " + answerFromDb.getId() + " for question with ID - " + questionFromDb.getId())
                 .build();
+    }
+
+    @Override
+    public QAResponseDTO likeSubject(LikeRequestDTO likeRequestDTO, String jwtToken) {
+        Optional<Question> optionalQuestion = Optional.empty();
+        Optional<Answer> optionalAnswer = Optional.empty();
+        long userId = 0;
+        String type = likeRequestDTO.getType().name();
+
+        if(type.equals(SubjectEnum.QUESTION.name())){
+            optionalQuestion = Optional.ofNullable(questionRepository.findById(likeRequestDTO.getSubjectId())
+                    .orElseThrow(() -> new RuntimeException("Question not found")));
+        } else {
+            optionalAnswer = Optional.ofNullable(answerRepository.findById(likeRequestDTO.getSubjectId())
+                    .orElseThrow(() -> new RuntimeException("Answer not found")));
+        }
+
+        UserResponseDTO userResponseDTO;
+        try {
+            userResponseDTO = userGatewayService.fetchUserById(likeRequestDTO.getUserId(), jwtToken);
+        } catch (Exception e){
+            throw new GenericException("Issue with connecting with User Service, details - " + e.getMessage());
+        }
+
+        if(userResponseDTO != null){
+            userId = userResponseDTO.getUserId();
+        } else {
+            throw new GenericException("User not found");
+        }
+
+        if(optionalQuestion.isPresent()){
+
+            Question questionFromDb = optionalQuestion.get();
+            questionFromDb.getLikedBy().add(userId);
+            questionRepository.save(questionFromDb);
+            return QAResponseDTO.builder()
+                    .message("Question with ID " + likeRequestDTO.getSubjectId() + " liked by user with ID " + userId)
+                    .build();
+
+        } else if(optionalAnswer.isPresent()) {
+
+            Answer answerFromDb = optionalAnswer.get();
+            answerFromDb.getLikedBy().add(userId);
+            answerRepository.save(answerFromDb);
+            return QAResponseDTO.builder()
+                    .message("Answer with ID " + likeRequestDTO.getSubjectId() + " liked by user with ID " + userId)
+                    .build();
+
+        } else {
+            throw new GenericException("Invalid Subject");
+        }
     }
 }

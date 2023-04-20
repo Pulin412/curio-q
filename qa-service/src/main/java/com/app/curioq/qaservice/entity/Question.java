@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -26,6 +27,8 @@ public class Question {
     private String userEmail;
     @Column(name = "userid")
     private long userId;
+
+    private Set<Long> likedBy;
 
     @JsonIgnoreProperties("question")
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)

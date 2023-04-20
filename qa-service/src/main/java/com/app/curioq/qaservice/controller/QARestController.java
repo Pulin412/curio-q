@@ -1,6 +1,7 @@
 package com.app.curioq.qaservice.controller;
 
 import com.app.curioq.qaservice.model.AnswerRequestDTO;
+import com.app.curioq.qaservice.model.LikeRequestDTO;
 import com.app.curioq.qaservice.model.QAResponseDTO;
 import com.app.curioq.qaservice.model.QuestionRequestDTO;
 import com.app.curioq.qaservice.service.QAServiceImpl;
@@ -41,5 +42,12 @@ public class QARestController {
                         .questionList(qaService.findAllQuestions())
                         .build()
         );
+    }
+
+    @PostMapping("/like/subject")
+    public ResponseEntity<QAResponseDTO> like(@RequestBody LikeRequestDTO likeRequestDTO,
+                                              @RequestHeader(name = "Authorization") String jwtToken){
+        validationService.validateLikeRequest(likeRequestDTO);
+        return ResponseEntity.ok(qaService.likeSubject(likeRequestDTO, jwtToken));
     }
 }

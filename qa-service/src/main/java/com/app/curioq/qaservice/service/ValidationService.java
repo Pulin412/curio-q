@@ -2,6 +2,7 @@ package com.app.curioq.qaservice.service;
 
 import com.app.curioq.qaservice.exceptions.InvalidRequestException;
 import com.app.curioq.qaservice.model.AnswerRequestDTO;
+import com.app.curioq.qaservice.model.LikeRequestDTO;
 import com.app.curioq.qaservice.model.QuestionRequestDTO;
 import com.app.curioq.qaservice.utils.QAConstants;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,14 @@ public class ValidationService {
                 answerRequestDTO.getAnswer().isEmpty() ||
                 answerRequestDTO.getQuestionId() == null) {
 
+            throw new InvalidRequestException(QAConstants.EXCEPTION_INVALID_REQUEST_MESSAGE);
+        }
+    }
+
+    public void validateLikeRequest(LikeRequestDTO likeRequestDTO) {
+        if(likeRequestDTO.getSubjectId() < 1L
+                || likeRequestDTO.getUserId() < 1L
+                || likeRequestDTO.getType() == null){
             throw new InvalidRequestException(QAConstants.EXCEPTION_INVALID_REQUEST_MESSAGE);
         }
     }

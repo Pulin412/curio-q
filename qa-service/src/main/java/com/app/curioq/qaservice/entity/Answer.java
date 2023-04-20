@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Entity
 @Data
 @Builder
@@ -22,6 +24,8 @@ public class Answer {
     private String userEmail;
     @Column(name = "userid")
     private long userId;
+
+    private Set<Long> likedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
