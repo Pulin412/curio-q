@@ -22,7 +22,7 @@ QA-Service
 
 - [x] Users can ask questions : `User`
 - [x] Users can reply to questions as answers : `User`
-- [ ] Users can like questions and answers : `User`
+- [x] Users can like questions and answers : `User`
 
 Search Service
 
