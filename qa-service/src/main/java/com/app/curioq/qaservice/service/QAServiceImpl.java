@@ -9,23 +9,28 @@ import com.app.curioq.qaservice.model.*;
 import com.app.curioq.qaservice.repository.AnswerRepository;
 import com.app.curioq.qaservice.repository.QuestionRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class QAServiceImpl implements QAService{
 
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final UserGatewayService userGatewayService;
+    private final PublishEventService publishEventService;
 
-    public QAServiceImpl(QuestionRepository questionRepository, AnswerRepository answerRepository, UserGatewayService userGatewayService) {
+    public QAServiceImpl(QuestionRepository questionRepository, AnswerRepository answerRepository, UserGatewayService userGatewayService, PublishEventService publishEventService) {
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.userGatewayService = userGatewayService;
+        this.publishEventService = publishEventService;
     }
 
 
@@ -50,6 +55,16 @@ public class QAServiceImpl implements QAService{
                 .build();
 
         Question questionFromDb = questionRepository.save(question);
+
+        if(!publishEventService.publish(PublishEventDTO.builder()
+                .eventType(EventTypeEnum.QUESTION_CREATED)
+                .publishedAt(LocalDateTime.now())
+                .publishedEntityId(question.getId())
+                .message("Question submitted")
+                .build())){
+            log.error("Unable to publish event for {}", question.getQuestionDescription());
+        }
+
         return QAResponseDTO.builder()
                 .message("question submitted with ID - " + questionFromDb.getId())
                 .build();
