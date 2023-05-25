@@ -11,6 +11,8 @@ services:
             - POSTGRES_DB=user-db
         volumes:
             - ./db-data:/var/lib/postgresql/data
+        networks:
+            - curioq-network
     
     zookeeper:
         image: confluentinc/cp-zookeeper:6.2.1
@@ -20,6 +22,8 @@ services:
         environment:
             ZOOKEEPER_CLIENT_PORT: 2181
             ZOOKEEPER_TICK_TIME: 2000
+        networks:
+            - curioq-network
 
     kafka:
         image: confluentinc/cp-kafka:6.2.1
@@ -40,3 +44,26 @@ services:
             KAFKA_DELETE_TOPIC_ENABLE: "true"                
         volumes:
             - ./kafka-data:/var/lib/kafka/data
+        networks:
+            - curioq-network
+              
+    auth-service:
+        container_name: auth-service-container
+        build:
+            context: .
+            dockerfile: auth-service/Dockerfile
+        ports:
+            - "8080:8080"
+        networks:
+            - curioq-network
+        depends_on:
+            - db
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db-container:5432/user-db
+            - SPRING_DATASOURCE_USERNAME=admin
+            - SPRING_DATASOURCE_PASSWORD=admin
+            - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+            - dbhost=192.168.178.204
+
+networks:
+    curioq-network:
