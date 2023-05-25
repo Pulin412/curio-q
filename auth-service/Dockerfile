@@ -7,9 +7,6 @@ WORKDIR /auth
 # Copy jar file
 COPY auth-service/pom.xml .
 COPY auth-service/src ./src
-#COPY pom.xml .
-#COPY src ./src
-#COPY target/auth-service-0.0.1-SNAPSHOT.jar /auth/auth-service-0.0.1-SNAPSHOT.jar
 COPY auth-service/target/auth-service-0.0.1-SNAPSHOT.jar /auth/auth-service-0.0.1-SNAPSHOT.jar
 
 # Download the project dependencies specified in pom.xml
@@ -22,7 +19,6 @@ ENV SPRING_DATASOURCE_URL=jdbc:postgresql://user-db-container:5432/user-db
 ENV SPRING_DATASOURCE_USERNAME=admin
 ENV SPRING_DATASOURCE_PASSWORD=admin
 ENV SPRING_JPA_HIBERNATE_DDL_AUTO=none
-#ENV dbhost=192.168.178.204
 
 # Run Maven build
 #RUN mvn clean install
