@@ -13,7 +13,7 @@ services:
             - ./db-data:/var/lib/postgresql/data
         networks:
             - curioq-network
-    
+
     zookeeper:
         image: confluentinc/cp-zookeeper:6.2.1
         container_name: zookeeper-container
@@ -41,12 +41,12 @@ services:
             KAFKA_DEFAULT_REPLICATION_FACTOR: 3
             KAFKA_NUM_PARTITIONS: 3
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-            KAFKA_DELETE_TOPIC_ENABLE: "true"                
+            KAFKA_DELETE_TOPIC_ENABLE: "true"
         volumes:
             - ./kafka-data:/var/lib/kafka/data
         networks:
             - curioq-network
-              
+
     auth-service:
         container_name: auth-service-container
         build:
@@ -64,6 +64,18 @@ services:
             - SPRING_DATASOURCE_PASSWORD=admin
             - SPRING_JPA_HIBERNATE_DDL_AUTO=none
             - dbhost=192.168.178.204
+              
+    security-lib:
+        container_name: security-lib-container
+        build:
+            context: .
+            dockerfile: security-lib/Dockerfile
+        ports:
+            - "9090:9090"
+        networks:
+            - curioq-network
+        environment:
+            - server.port=9090
 
 networks:
     curioq-network:
