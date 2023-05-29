@@ -6,6 +6,7 @@ target/
 .DS_Store
 mvnw
 mvnw.cmd
+.m2
 
 ### STS ###
 .apt_generated
