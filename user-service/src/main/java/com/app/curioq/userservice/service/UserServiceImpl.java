@@ -11,7 +11,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserGatewayService userGatewayService;
     private final ValidationService validationService;
     private final JwtValidationService jwtValidationService;
-    private BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public AuthenticationResponseDTO register(RegisterRequestDTO registerRequestDTO) {

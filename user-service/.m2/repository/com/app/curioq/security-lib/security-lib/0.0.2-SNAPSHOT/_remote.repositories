@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Thu Apr 13 13:12:56 CEST 2023
+security-lib-0.0.2-SNAPSHOT.jar>=
+security-lib-0.0.2-SNAPSHOT.pom>=

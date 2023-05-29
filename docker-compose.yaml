@@ -63,19 +63,23 @@ services:
             - SPRING_DATASOURCE_USERNAME=admin
             - SPRING_DATASOURCE_PASSWORD=admin
             - SPRING_JPA_HIBERNATE_DDL_AUTO=none
-            - dbhost=192.168.178.204
-              
-    security-lib:
-        container_name: security-lib-container
+
+    user-service:
+        container_name: user-service-container
         build:
             context: .
-            dockerfile: security-lib/Dockerfile
+            dockerfile: user-service/Dockerfile
         ports:
-            - "9090:9090"
+            - "8081:8081"
         networks:
             - curioq-network
+        depends_on:
+            - db
         environment:
-            - server.port=9090
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db-container:5432/user-db
+            - SPRING_DATASOURCE_USERNAME=admin
+            - SPRING_DATASOURCE_PASSWORD=admin
+            - SPRING_JPA_HIBERNATE_DDL_AUTO=none
 
 networks:
     curioq-network:

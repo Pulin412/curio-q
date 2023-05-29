@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.app.curioq.userservice</groupId>
+  <artifactId>user-service</artifactId>
+  <versioning>
+    <versions>
+      <version>0.0.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20230413114311</lastUpdated>
+  </versioning>
+</metadata>

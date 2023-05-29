@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat May 20 11:17:38 CEST 2023
+auth-service-0.0.1-SNAPSHOT.jar>=
+auth-service-0.0.1-SNAPSHOT.pom>=
