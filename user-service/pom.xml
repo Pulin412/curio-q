@@ -97,11 +97,4 @@
 		</plugins>
 	</build>
 
-<!--	<repositories>-->
-<!--		<repository>-->
-<!--			<id>docker-hub</id>-->
-<!--			<url>https://index.docker.io/v1/</url>-->
-<!--		</repository>-->
-<!--	</repositories>-->
-
 </project>
