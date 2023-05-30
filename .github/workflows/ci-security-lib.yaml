@@ -4,18 +4,13 @@ on:
     push:
         branches:
             - main
+        paths:
+          - 'security-lib/**'
 
 jobs:
   build_and_test:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service:
-          - security-lib
-          - auth-service
-          - qa-service
-          - user-service
 
     steps:
       - uses: actions/checkout@v2
@@ -29,8 +24,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ matrix.service }}-${{ hashFiles(format('{0}/pom.xml', matrix.service)) }}
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build ${{ matrix.service }}
-        run: mvn clean install -Dmaven.test.skip --file ${{ matrix.service }}/pom.xml
+      - name: Build security-lib
+        run: mvn clean install -Dmaven.test.skip --file security-lib/pom.xml
