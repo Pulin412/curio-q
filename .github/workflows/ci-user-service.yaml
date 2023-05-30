@@ -38,7 +38,4 @@ jobs:
         run: docker-compose build
 
       - name: Deploy with Docker Compose
-        uses: docker/compose-action@v2
-        with:
-          compose-file: docker-compose.yml
-          compose-command: up
+        run: docker-compose up
