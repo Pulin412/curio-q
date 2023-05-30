@@ -9,6 +9,13 @@ jobs:
   build_and_test:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - security-lib
+          - auth-service
+          - qa-service
+          - user-service
 
     steps:
       - uses: actions/checkout@v2
@@ -22,17 +29,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-m2-${{ matrix.service }}-${{ hashFiles(format('{0}/pom.xml', matrix.service)) }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build Security Lib
-        run: mvn clean install -Dmaven.test.skip --file security-lib/pom.xml
-
-      - name: Build Authentication service
-        run: mvn clean install -Dmaven.test.skip --file auth-service/pom.xml
-        
-      - name: Build QA service
-        run: mvn clean install -Dmaven.test.skip --file qa-service/pom.xml
-        
-      - name: Build User service
-        run: mvn clean install -Dmaven.test.skip --file user-service/pom.xml
+      - name: Build ${{ matrix.service }}
+        run: mvn clean install -Dmaven.test.skip --file ${{ matrix.service }}/pom.xml
