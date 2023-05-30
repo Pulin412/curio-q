@@ -1,4 +1,4 @@
-name: CI
+name: CI-security-lib
 
 on:
     push:
