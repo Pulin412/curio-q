@@ -29,3 +29,15 @@ jobs:
 
       - name: Build qa-service
         run: mvn clean install -Dmaven.test.skip --file qa-service/pom.xml
+
+      - name: Stop and Remove Container
+        run: docker-compose down
+
+      - name: Build Docker Image
+        run: docker-compose build
+
+      - name: Deploy with Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-file: docker-compose.yml
+          compose-command: up

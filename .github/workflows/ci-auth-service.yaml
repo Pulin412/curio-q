@@ -29,3 +29,15 @@ jobs:
 
       - name: Build auth-service
         run: mvn clean install -Dmaven.test.skip --file auth-service/pom.xml
+
+      - name: Stop and Remove Containers
+        run: docker-compose down
+
+      - name: Build Docker Image
+        run: docker-compose build
+
+      - name: Deploy with Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-file: docker-compose.yml
+          compose-command: up
