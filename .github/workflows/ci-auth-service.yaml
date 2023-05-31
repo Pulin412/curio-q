@@ -42,7 +42,7 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Container image
-        run: docker build -t auth-service:latest .
+        run: docker-compose build auth-service
 
       - name: Publish Docker image
         run: docker push ${{ secrets.DOCKER_REPO }}
