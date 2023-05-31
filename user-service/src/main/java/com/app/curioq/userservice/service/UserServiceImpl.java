@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
                         token = userFromDb.getToken();
                     }
                 } catch (ExpiredJwtException e) {
-                    log.info("USER SERICE ::: Token not available, generating new token for {}", userFromDb.getEmail());
+                    log.info("USER SERVICE ::: Token not available, generating new token for {}", userFromDb.getEmail());
                     token = userGatewayService.generateToken(userFromDb);
                     saveToken(userFromDb, token);
                 }
