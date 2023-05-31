@@ -60,10 +60,12 @@ services:
 
     auth-service:
         container_name: auth-service-container
-        image: auth-service-image
+        image: auth-service-image:${IMAGE_TAG}
         build:
             context: .
             dockerfile: auth-service/Dockerfile
+            args:
+                - IMAGE_TAG=${IMAGE_TAG}
         ports:
             - "8080:8080"
         networks:

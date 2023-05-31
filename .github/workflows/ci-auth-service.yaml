@@ -41,6 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_and_test]
 
+    env:
+      IMAGE_TAG: ${{ formatTimestamp(now()) }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -54,7 +57,7 @@ jobs:
           path: auth-service/target
 
       - name: Build Container image
-        run: docker-compose build auth-service
+        run: IMAGE_TAG=${IMAGE_TAG} docker-compose build auth-service
 
       - name: Publish Docker image
         run: docker push ${{ secrets.DOCKER_REPO }}/auth-service-image:${{ github.sha }}
