@@ -38,7 +38,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         optionalToken.ifPresent(tokenRepository::delete);
         tokenRepository.save(token);
 
-        log.info("AUTHENTICATION SERVICE ::: Token generated Successfully ");
+        log.info("AUTHENTICATION SERVICE ::: Token generated Successfully");
         return AuthenticationResponseDTO.builder().token(generatedToken).build();
     }
 

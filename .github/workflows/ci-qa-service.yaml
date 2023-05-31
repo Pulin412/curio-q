@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-m2-${{ hashFiles('qa-service/**/pom.xml') }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build qa-service
@@ -37,4 +37,4 @@ jobs:
         run: docker-compose build
 
       - name: Deploy with Docker Compose
-        run: docker-compose up qa-service
+        run: docker-compose up -d qa-service

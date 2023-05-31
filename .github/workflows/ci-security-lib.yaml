@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-m2-${{ hashFiles('security-lib/**/pom.xml') }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build security-lib
@@ -40,4 +40,4 @@ jobs:
         run: docker-compose build user-service
 
       - name: Deploy with Docker Compose
-        run: docker-compose up user-service
+        run: docker-compose up -d user-service
