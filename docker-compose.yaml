@@ -80,9 +80,12 @@ services:
 
     user-service:
         container_name: user-service-container
+        image: user-service-image:${IMAGE_TAG}
         build:
             context: .
             dockerfile: user-service/Dockerfile
+            args:
+                - IMAGE_TAG=${IMAGE_TAG}
         ports:
             - "8081:8081"
         networks:
@@ -97,9 +100,12 @@ services:
     
     qa-service:
         container_name: qa-service-container
+        image: qa-service-image:${IMAGE_TAG}
         build:
             context: .
             dockerfile: qa-service/Dockerfile
+            args:
+                - IMAGE_TAG=${IMAGE_TAG}
         ports:
             - "8082:8082"
         networks:

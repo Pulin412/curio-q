@@ -27,15 +27,41 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('user-service/**/pom.xml') }}-${{ github.sha }}
           restore-keys: ${{ runner.os }}-m2
+          
+      - name: Build security-lib
+        run: mvn clean install -Dmaven.test.skip --file security-lib/pom.xml
 
       - name: Build user-service
         run: mvn clean install -Dmaven.test.skip --file user-service/pom.xml
-        
-      - name: Stop and Remove Container
-        run: docker-compose down user-service
+          
+      - name: Publish user-service JAR artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: user-service-jar
+          path: user-service/target/user-service-0.0.1-SNAPSHOT.jar
 
-      - name: Build Docker Image
-        run: docker-compose build user-service
+  build-docker-image:
+    name: Publish to Docker Hub
+    runs-on: ubuntu-latest
+    needs: [build_and_test]
 
-      - name: Deploy with Docker Compose
-        run: docker-compose up -d user-service
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: user-service-jar
+          path: user-service/target
+
+      - name: Build Container image
+        run:  IMAGE_TAG=latest docker-compose build user-service
+
+      - name: Tag image to push to docker hub
+        run: docker tag user-service-image ${{ secrets.DOCKER_USERNAME }}/user-service-image
+
+      - name: Publish Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/user-service-image
