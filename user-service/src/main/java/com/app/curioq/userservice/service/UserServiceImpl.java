@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         if (token == null)
             throw new GatewayException(EXCEPTION_GATEWAY_MESSAGE);
 
-        log.info("USER SERVICE ::: Token generated for {}", savedUser.getEmail());
+        log.info("USER SERVICE ::: Token generated for {} ", savedUser.getEmail());
         saveToken(savedUser, token);
 
         return AuthenticationResponseDTO.builder()
