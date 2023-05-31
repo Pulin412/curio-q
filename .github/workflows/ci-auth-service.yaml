@@ -42,7 +42,7 @@ jobs:
     needs: [build_and_test]
 
     env:
-      IMAGE_TAG: ${{ formatTimestamp(now()) }}
+      IMAGE_TAG: latest
 
     steps:
       - uses: actions/checkout@v2
