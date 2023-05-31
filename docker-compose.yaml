@@ -60,6 +60,7 @@ services:
 
     auth-service:
         container_name: auth-service-container
+        image: auth-service-image
         build:
             context: .
             dockerfile: auth-service/Dockerfile
