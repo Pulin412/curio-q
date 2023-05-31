@@ -37,4 +37,4 @@ jobs:
         run: docker-compose build auth-service
 
       - name: Deploy with Docker Compose
-        run: docker-compose up auth-service
+        run: docker-compose up -d auth-service
