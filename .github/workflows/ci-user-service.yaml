@@ -40,11 +40,11 @@ jobs:
           name: user-service-jar
           path: user-service/target/user-service-0.0.1-SNAPSHOT.jar
       
-      - name: Publish m2 folder
-        uses: actions/upload-artifact@v2
-        with:
-          name: m2
-          path: user-service/.m2
+#      - name: Publish m2 folder
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: m2
+#          path: user-service/.m2
 
   build-docker-image:
     name: Publish to Docker Hub
@@ -63,11 +63,11 @@ jobs:
           name: user-service-jar
           path: user-service/target
 
-      - name: Download m2 folder
-        uses: actions/download-artifact@v2
-        with:
-          name: m2
-          path: user-service/.m2
+#      - name: Download m2 folder
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: m2
+#          path: user-service/.m2
 
       - name: Build Container image
         run:  IMAGE_TAG=latest docker-compose build user-service
