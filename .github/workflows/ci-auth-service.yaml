@@ -30,6 +30,12 @@ jobs:
       - name: Build auth-service
         run: mvn clean install -Dmaven.test.skip --file auth-service/pom.xml
 
+      - name: Publish JAR artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: auth-service-jar
+          path: auth-service/target/auth-service-0.0.1-SNAPSHOT.jar
+
   build-docker-image:
     name: Publish to Docker Hub
     runs-on: ubuntu-latest
@@ -41,8 +47,13 @@ jobs:
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: auth-service-jar
+
       - name: Build Container image
         run: docker-compose build auth-service
 
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_REPO }}
+        run: docker push ${{ secrets.DOCKER_REPO }}/auth-service:${{ github.sha }}
