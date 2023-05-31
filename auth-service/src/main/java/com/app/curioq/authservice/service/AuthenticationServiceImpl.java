@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class AuthenticationServiceImpl implements AuthenticationService{
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;

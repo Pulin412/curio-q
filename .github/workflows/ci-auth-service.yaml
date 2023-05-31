@@ -57,7 +57,7 @@ jobs:
         run:  IMAGE_TAG=latest docker-compose build auth-service
 
       - name: Tag image to push to docker hub
-        run: docker tag auth-service ${{ secrets.DOCKER_USERNAME }}/auth-service
+        run: docker tag auth-service-image ${{ secrets.DOCKER_USERNAME }}/auth-service-image
 
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/auth-service
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/auth-service-image

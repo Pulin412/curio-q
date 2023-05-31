@@ -60,7 +60,7 @@ services:
 
     auth-service:
         container_name: auth-service-container
-        image: auth-service:${IMAGE_TAG}
+        image: auth-service-image:${IMAGE_TAG}
         build:
             context: .
             dockerfile: auth-service/Dockerfile
