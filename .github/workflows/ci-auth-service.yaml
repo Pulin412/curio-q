@@ -60,4 +60,4 @@ jobs:
         run: IMAGE_TAG=${IMAGE_TAG} docker-compose build auth-service
 
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_REPO }}/auth-service-image:${IMAGE_TAG}
+        run: docker push ${{ secrets.DOCKER_REPO }}/auth-service-image:${{ env.IMAGE_TAG }}
