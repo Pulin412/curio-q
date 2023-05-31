@@ -62,7 +62,7 @@ public class QAServiceImpl implements QAService{
                 .publishedEntityId(question.getId())
                 .message("Question submitted")
                 .build())){
-            log.error("Unable to publish event for {}", question.getQuestionDescription());
+            log.error("Unable to publish event for {} ", question.getQuestionDescription());
         }
 
         return QAResponseDTO.builder()
