@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: auth-service-deployment
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: auth-service
+    template:
+        metadata:
+            labels:
+                app: auth-service
+        spec:
+            containers:
+                - name: auth-service
+                  image: pulin412/auth-service-image:latest
+                  ports:
+                      - containerPort: 8080
+                  env:
+                      - name: SPRING_DATASOURCE_URL
+                        value: jdbc:postgresql://db-service:5432/user-db
+                      - name: SPRING_DATASOURCE_USERNAME
+                        value: admin
+                      - name: SPRING_DATASOURCE_PASSWORD
+                        value: admin
+                      - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+                        value: none
